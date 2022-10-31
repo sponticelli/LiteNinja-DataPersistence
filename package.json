@@ -1,0 +1,23 @@
+{
+    "name": "com.liteninja.datapersistence",
+    "version": "1.0.0",
+    "displayName": "LiteNinja Data Persistence",
+    "description": "A Save Manager that allows to encrypt/decrypt data",
+    "unity": "2021.1",
+    "documentationUrl": "https://github.com/sponticelli/LiteNinja-DataPersistence/blob/main/README.md",
+    "changelogUrl": "https://github.com/sponticelli/LiteNinja-DataPersistence/blob/main/changelog.md",
+    "licensesUrl": "https://github.com/sponticelli/LiteNinja-DataPersistence/blob/main/LICENSE",
+    "dependencies": {
+    },
+    "keywords": [
+      "utility",
+      "Save System",
+      "architecture",
+      "utils"
+    ],
+    "author": {
+      "name": "Sandro Ponticelli",
+      "email": "sandro.ponticelli@gmail.com",
+      "url": "https://github.com/sponticelli"
+    }
+  }
