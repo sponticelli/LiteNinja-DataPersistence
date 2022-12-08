@@ -14,7 +14,7 @@ namespace LiteNinja.DataPersistence
     {
       _baseLocation = string.IsNullOrEmpty(baseLocation)
         ? Application.persistentDataPath
-        : Application.persistentDataPath + Path.PathSeparator + baseLocation;
+        : Application.persistentDataPath + Path.DirectorySeparatorChar + baseLocation;
       if (!Directory.Exists(_baseLocation))
       {
         Directory.CreateDirectory(_baseLocation);
@@ -26,14 +26,14 @@ namespace LiteNinja.DataPersistence
     public bool Save(string resourceId, object data)
     {
       var text = JsonUtility.ToJson(data);
-      var path = _baseLocation + Path.PathSeparator + resourceId;
+      var path = _baseLocation + Path.DirectorySeparatorChar + resourceId;
       File.WriteAllText(path, _encryptor.Encrypt(text));
       return true;
     }
 
     public T Load<T>(string resourceId)
     {
-      var path = _baseLocation + Path.PathSeparator + resourceId;
+      var path = _baseLocation + Path.DirectorySeparatorChar + resourceId;
       if (!File.Exists(path)) return default;
 
       var text = _encryptor.Decrypt(File.ReadAllText(path));
@@ -42,13 +42,13 @@ namespace LiteNinja.DataPersistence
 
     public bool Exists(string resourceId)
     {
-      var path = _baseLocation + Path.PathSeparator + resourceId;
+      var path = _baseLocation + Path.DirectorySeparatorChar + resourceId;
       return File.Exists(path);
     }
 
     public void Delete(string resourceId)
     {
-      var path = _baseLocation + Path.PathSeparator + resourceId;
+      var path = _baseLocation + Path.DirectorySeparatorChar + resourceId;
       if (File.Exists(path))
       {
         File.Delete(path);
