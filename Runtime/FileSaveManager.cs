@@ -119,6 +119,14 @@ namespace LiteNinja.DataPersistence
 
       public void Add(string key, T value)
       {
+        //if key already exists, replace value
+        if (Get(key, out var _))
+        {
+          var index = _keys.IndexOf(key);
+          _values[index] = value;
+          return;
+        }
+      
         _keys.Add(key);
         _values.Add(value);
       }

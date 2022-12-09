@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.2] - 2022-12-09
+### Fixed 
+- Fix a bug that allowed to have duplicate keys in the same file
+
 ## [1.1.1] - 2022-12-09
 ### Added
 - Support for simple data types (int, float, bool, string, array)
