@@ -2,11 +2,10 @@ namespace LiteNinja.DataPersistence
 {
   public interface ISaveManager
   {
-    bool Save(string resourceId, object data);
+    bool Save<T>(string resourceId, T data);
     T Load<T>(string resourceId);
-    bool Exists(string resourceId);
-    void Delete(string resourceId);
+    bool Exists<T>(string resourceId);
+    void Delete<T>(string resourceId);
     void DeleteAll();
-    string[] GetResourceIds();
   }
 }
