@@ -32,41 +32,53 @@ namespace LiteNinja.DataPersistence
 
     public bool Save<T>(string resourceId, T data)
     {
-      Preload<T>();
-      var fileData = (FileData<T>)_data[typeof(T)];
-      fileData.Add(resourceId, data);
-      var text = JsonUtility.ToJson(fileData);
-      File.WriteAllText(GetFileName<T>(), _encryptor.Encrypt(text));
+      if (IsPrimitive<T>())
+      {
+        return PrimitiveSave<T>(resourceId, data);
+      }
+
+      var text = JsonUtility.ToJson(data);
+      File.WriteAllText(GetFileName(resourceId), _encryptor.Encrypt(text));
       return true;
     }
 
+
+
     public T Load<T>(string resourceId)
     {
-      Preload<T>();
-      var fileData = (FileData<T>)_data[typeof(T)];
-      var result = fileData.Get(resourceId, out var value);
-      return result ? value : default;
-    }
+      if (IsPrimitive<T>())
+      {
+        return PrimitiveLoad<T>(resourceId);
+      }
 
-    private void Preload<T>()
-    {
-      if (_data.ContainsKey(typeof(T))) return;
-      _data.Add(typeof(T), new FileData<T>());
-      var path = GetFileName<T>();
-      if (!File.Exists(path)) return;
-      var text = _encryptor.Decrypt(File.ReadAllText(path));
-      var fileData = JsonUtility.FromJson<FileData<T>>(text);
-      _data[typeof(T)] = fileData;
-    }
+      var fileName = GetFileName(resourceId);
+      if (!File.Exists(fileName))
+      {
+        return default;
+      }
 
+      var text = File.ReadAllText(fileName);
+      return JsonUtility.FromJson<T>(_encryptor.Decrypt(text));
+    }
+    
     public bool Exists<T>(string resourceId)
     {
-      Preload<T>();
-      var fileData = (FileData<T>)_data[typeof(T)];
-      return fileData.Get(resourceId, out _);
+      return IsPrimitive<T>() ? PrimitiveExists<T>(resourceId) : File.Exists(GetFileName(resourceId));
     }
 
     public void Delete<T>(string resourceId)
+    {
+      if (IsPrimitive<T>())
+      {
+        PrimitiveDelete<T>(resourceId);
+      }
+      else
+      {
+        File.Delete(GetFileName(resourceId));
+      }
+    }
+
+    private void PrimitiveDelete<T>(string resourceId)
     {
       Preload<T>();
       var fileData = (FileData<T>)_data[typeof(T)];
@@ -82,17 +94,35 @@ namespace LiteNinja.DataPersistence
       {
         File.Delete(file);
       }
-      
+
       _data.Clear();
     }
+
+    private void Preload<T>()
+    {
+      if (_data.ContainsKey(typeof(T))) return;
+      _data.Add(typeof(T), new FileData<T>());
+      var path = GetFileName<T>();
+      if (!File.Exists(path)) return;
+      var text = _encryptor.Decrypt(File.ReadAllText(path));
+      var fileData = JsonUtility.FromJson<FileData<T>>(text);
+      _data[typeof(T)] = fileData;
+    }
+
+    
+    private bool IsPrimitive<T>()
+    {
+      return typeof(T).IsPrimitive || typeof(T) == typeof(string);
+    }
+    
 
     private string GetFileName<T>()
     {
       if (_fileNames.ContainsKey(typeof(T))) return _fileNames[typeof(T)];
-      
+
       var fileName = typeof(T).Name;
       //replace forbidden characters in file name
-      fileName = Path.GetInvalidFileNameChars().Aggregate(fileName, (current, c) => 
+      fileName = Path.GetInvalidFileNameChars().Aggregate(fileName, (current, c) =>
         current.Replace(c, '_'));
 
       var path = _baseLocation + Path.DirectorySeparatorChar + fileName;
@@ -100,6 +130,43 @@ namespace LiteNinja.DataPersistence
       return path;
     }
 
+    private string GetFileName(string resourceId)
+    {
+      var fileName = resourceId;
+      //replace forbidden characters in file name
+      fileName = Path.GetInvalidFileNameChars().Aggregate(fileName, (current, c) =>
+        current.Replace(c, '_'));
+
+      var path = _baseLocation + Path.DirectorySeparatorChar + fileName;
+      return path;
+    }
+    
+    private bool PrimitiveSave<T>(string resourceId, T data)
+    {
+      Preload<T>();
+      var fileData = (FileData<T>)_data[typeof(T)];
+      fileData.Add(resourceId, data);
+      var text = JsonUtility.ToJson(fileData);
+      File.WriteAllText(GetFileName<T>(), _encryptor.Encrypt(text));
+      return true;
+    }
+    
+    private T PrimitiveLoad<T>(string resourceId)
+    {
+      Preload<T>();
+      var fileData = (FileData<T>)_data[typeof(T)];
+      var result = fileData.Get(resourceId, out var value);
+      return result ? value : default;
+    }
+    
+    private bool PrimitiveExists<T>(string resourceId)
+    {
+      Preload<T>();
+      var fileData = (FileData<T>)_data[typeof(T)];
+      return fileData.Get(resourceId, out _);
+    }
+
+    #region Wrapper for Primitive Types
     private interface IFileData
     {
     }
@@ -125,7 +192,7 @@ namespace LiteNinja.DataPersistence
           _values[index] = value;
           return;
         }
-      
+
         _keys.Add(key);
         _values.Add(value);
       }
@@ -165,5 +232,6 @@ namespace LiteNinja.DataPersistence
       public int Count => _keys.Count;
       public List<string> Keys => _keys;
     }
+    #endregion
   }
 }

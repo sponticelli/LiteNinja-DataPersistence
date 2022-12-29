@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.4] - 2022-12-29
+### Changed
+- Now the FileSaveManager uses the resourceId as the filename if the data is not a string or a primitive type.
+
 ## [1.1.3] - 2022-12-09
 ### Fixed 
 - Fix a bug that allowed to have duplicate keys in the same file

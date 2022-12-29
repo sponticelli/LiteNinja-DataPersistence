@@ -1,6 +1,6 @@
 {
     "name": "com.liteninja.datapersistence",
-    "version": "1.1.3",
+    "version": "1.1.4",
     "displayName": "LiteNinja Data Persistence",
     "description": "A Save Manager that allows to encrypt/decrypt data",
     "unity": "2021.1",
