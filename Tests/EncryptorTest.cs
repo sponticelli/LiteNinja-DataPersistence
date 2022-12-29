@@ -51,7 +51,7 @@ public class EncryptorTest
 
 
   [Serializable]
-  public class SerializableClass
+  public class SerializableClass 
   {
     public string name;
     public int age;
@@ -77,6 +77,16 @@ public class EncryptorTest
     public static bool operator !=(SerializableClass a, SerializableClass b)
     {
       return !(a == b);
+    }
+
+    public override int GetHashCode()
+    {
+      return base.GetHashCode();
+    }
+    
+    public override bool Equals(object obj)
+    {
+      return this == (SerializableClass)obj;
     }
   }
 }
